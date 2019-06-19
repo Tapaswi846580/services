@@ -350,4 +350,29 @@ public class Services {
 			return "Error";
 		}
 	}
+	
+	@GET
+	@Path("/getGroup/{email}")
+	public String getGroup(@PathParam("email") String email) {
+		try {
+			doConnection();
+			ps = con.prepareStatement("SELECT Grp FROM tbl_group_details WHERE Email_Id = ?");
+			ps.setString(1, email);
+			rs = ps.executeQuery();
+			while(rs.next()) {
+				return rs.getString("Grp");
+			}
+			con.close();
+			return "No Registered";
+		}catch(Exception e) {
+			try {
+				con.close();
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+			return "Error";
+		}
+	}
 }
