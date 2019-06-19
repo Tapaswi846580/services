@@ -69,7 +69,7 @@ public class Services {
 	@Path("/authenticate")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public boolean authenticate(User user) {
+	public String authenticate(User user) {
 		try {
 			doConnection();
 			if (user.getType().equals("Student")) {
@@ -81,10 +81,10 @@ public class Services {
 					if (rs.getString("Email_Id").equals(user.getEmailId())
 							&& rs.getString("Password").equals(user.getPassword())) {
 						con.close();
-						return true;
+						return "Valid";
 					} else {
 						con.close();
-						return false;
+						return "Invalid";
 					}
 				}
 			} else if (user.getType().equals("Admin")) {
@@ -97,15 +97,15 @@ public class Services {
 					if (rs.getString("Email_Id").equals(user.getEmailId())
 							&& rs.getString("Password").equals(user.getPassword())) {
 						con.close();
-						return true;
+						return "Valid";
 					} else {
 						con.close();
-						return false;
+						return "Invalid";
 					}
 				}
 			}
 			con.close();
-			return false;
+			return "Invalid";
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -115,7 +115,7 @@ public class Services {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			return false;
+			return "Error";
 		}
 	}
 
@@ -280,6 +280,7 @@ public class Services {
 			ps.setString(6, event.getDescription());
 			ps.setString(7, event.getVenue());
 			ps.execute();
+			ps.close();
 			con.close();
 			return "Done";
 		} catch (Exception e) {
@@ -303,6 +304,8 @@ public class Services {
 			ps = con.prepareStatement("DELETE FROM tbl_event_details WHERE ID = ?");
 			ps.setInt(1, id);
 			ps.execute();
+			ps.close();
+			con.close();
 			return "Done";
 		}catch(Exception e) {
 			e.printStackTrace();
