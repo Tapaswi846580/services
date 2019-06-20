@@ -209,7 +209,7 @@ public class Services {
 			ps = con.prepareStatement("SELECT * FROM tbl_event_details");
 			rs = ps.executeQuery();
 			while (rs.next()) {
-				Event event = new Event(rs.getInt("ID"), rs.getString("Date"), rs.getString("Grp"),
+				Event event = new Event(rs.getInt("ID"), rs.getString("Date"), rs.getString("Grp"), rs.getString("Batch"),
 						rs.getString("Start_Time"), rs.getString("End_Time"), rs.getString("Activity"),
 						rs.getString("Description"), rs.getString("Venue"));
 				events.add(event);
@@ -242,7 +242,7 @@ public class Services {
 			ps.setString(1,event.getDate());
 			rs = ps.executeQuery();
 			while (rs.next()) {
-				Event e = new Event(rs.getInt("ID"), rs.getString("Date"), rs.getString("Grp"),
+				Event e = new Event(rs.getInt("ID"), rs.getString("Date"), rs.getString("Grp"),rs.getString("Batch"),
 						rs.getString("Start_Time"), rs.getString("End_Time"), rs.getString("Activity"),
 						rs.getString("Description"), rs.getString("Venue"));
 				events.add(e);
