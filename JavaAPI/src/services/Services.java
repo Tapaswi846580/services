@@ -356,11 +356,11 @@ public class Services {
 	public String getGroup(@PathParam("email") String email) {
 		try {
 			doConnection();
-			ps = con.prepareStatement("SELECT Grp FROM tbl_group_details WHERE Email_Id = ?");
+			ps = con.prepareStatement("SELECT Grp, Batch FROM tbl_group_details WHERE Email_Id = ?");
 			ps.setString(1, email);
 			rs = ps.executeQuery();
 			while(rs.next()) {
-				return rs.getString("Grp");
+				return rs.getString("Grp")+","+rs.getString("Batch");
 			}
 			con.close();
 			return "No Registered";
