@@ -8,6 +8,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -30,6 +34,8 @@ public class Services {
 
 	void doConnection() throws ClassNotFoundException, SQLException {
 		Class.forName("com.mysql.jdbc.Driver");
+//		con = DriverManager.getConnection("jdbc:mysql://localhost:3306/auevents", "auevents",
+//				"!1Events");;
 		con = DriverManager.getConnection("jdbc:mysql://remotemysql.com:3306/kgJukQ0geQ?useSSL=false", "kgJukQ0geQ", "haebUrLDc8");
 	}
 
@@ -208,6 +214,7 @@ public class Services {
 			doConnection();
 			ps = con.prepareStatement("SELECT * FROM tbl_event_details");
 			rs = ps.executeQuery();
+			
 			while (rs.next()) {
 				Event event = new Event(rs.getInt("ID"), rs.getString("Date"), rs.getString("Grp"), rs.getString("Batch"),
 						rs.getString("Start_Time"), rs.getString("End_Time"), rs.getString("Activity"),
@@ -270,15 +277,16 @@ public class Services {
 		try {
 			doConnection();
 			ps = con.prepareStatement(
-					"INSERT INTO tbl_event_details(Date, Grp, Start_Time, End_Time, Activity, Description, Venue) VALUES"
-							+ "(?,?,?,?,?,?,?)");
-			ps.setString(1, event.getDate());
-			ps.setString(2, event.getGrp());
-			ps.setString(3, event.getStartTime());
-			ps.setString(4, event.getEndTime());
-			ps.setString(5, event.getActivity());
-			ps.setString(6, event.getDescription());
-			ps.setString(7, event.getVenue());
+					"INSERT INTO tbl_event_details(Date, Grp, Batch, Start_Time, End_Time, Activity, Description, Venue) VALUES"
+							+ "(?,?,?,?,?,?,?,?)");
+			ps.setString(1, event.getDate().trim());
+			ps.setString(2, event.getGrp().trim().toUpperCase());
+			ps.setString(3, event.getBatch().trim().toUpperCase());
+			ps.setString(4, event.getStartTime().trim());
+			ps.setString(5, event.getEndTime().trim());
+			ps.setString(6, event.getActivity().trim());
+			ps.setString(7, event.getDescription().trim());
+			ps.setString(8, event.getVenue().trim());
 			ps.execute();
 			ps.close();
 			con.close();
@@ -325,16 +333,20 @@ public class Services {
 	public String updateEvent(Event event) {
 		try {
 			doConnection();
-			ps = con.prepareStatement("UPDATE tbl_event_details SET Date = ?, Grp = ?, Start_Time = ?, End_Time = ?, "
-					+ "Activity = ?, Description = ?, Venue = ? WHERE ID = ?");
+			String s = "UPDATE `tbl_event_details` SET `Date`= ?,`Grp`= ?,`Batch`= ?,`Start_Time`= ?,`End_Time`= ?,`Activity`= ?,"
+					+ "`Description`= ?,`Venue`= ? WHERE `ID` = ?";
+//			ps = con.prepareStatement("UPDATE tbl_event_details SET Date = ?, Grp = ?, Batch = ?, Start_Time = ?, End_Time = ?, "
+//					+ "Activity = ?, Description = ?, Venue = ? WHERE ID = ?");
+			ps = con.prepareStatement(s);
 			ps.setString(1, event.getDate());
 			ps.setString(2, event.getGrp());
-			ps.setString(3, event.getStartTime());
-			ps.setString(4, event.getEndTime());
-			ps.setString(5, event.getActivity());
-			ps.setString(6, event.getDescription());
-			ps.setString(7, event.getVenue());
-			ps.setInt(8, event.getId());
+			ps.setString(3, event.getBatch());
+			ps.setString(4, event.getStartTime());
+			ps.setString(5, event.getEndTime());
+			ps.setString(6, event.getActivity());
+			ps.setString(7, event.getDescription());
+			ps.setString(8, event.getVenue());
+			ps.setInt(9, event.getId());
 			ps.execute();
 			ps.close();
 			con.close();
@@ -356,12 +368,15 @@ public class Services {
 	public String getGroup(@PathParam("email") String email) {
 		try {
 			doConnection();
-			ps = con.prepareStatement("SELECT Grp, Batch FROM tbl_group_details WHERE Email_Id = ?");
+			ps = con.prepareStatement("SELECT * FROM tbl_group_details WHERE Email_Id = ?");
 			ps.setString(1, email);
 			rs = ps.executeQuery();
 			while(rs.next()) {
-				return rs.getString("Grp")+","+rs.getString("Batch");
+				return rs.getString("Grp")+","+rs.getString("Batch")+","+rs.getString("Circle")+","+rs.getString("Faculty_Advisor")
+				+","+rs.getString("Email_Faculty_Advisor")+","+rs.getString("Student_Mitra")+","+rs.getString("Email_Student_Mitra")
+				+","+rs.getString("Mob_Student_Mitra");
 			}
+			
 			con.close();
 			return "No Registered";
 		}catch(Exception e) {
@@ -375,4 +390,5 @@ public class Services {
 			return "Error";
 		}
 	}
+	
 }
