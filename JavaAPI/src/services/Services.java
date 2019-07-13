@@ -34,9 +34,9 @@ public class Services {
 
 	void doConnection() throws ClassNotFoundException, SQLException {
 		Class.forName("com.mysql.jdbc.Driver");
-//		con = DriverManager.getConnection("jdbc:mysql://localhost:3306/auevents", "auevents",
-//				"!1Events");;
-		con = DriverManager.getConnection("jdbc:mysql://remotemysql.com:3306/kgJukQ0geQ?useSSL=false", "kgJukQ0geQ", "haebUrLDc8");
+		con = DriverManager.getConnection("jdbc:mysql://localhost:3306/auevents", "auevents",
+				"!1Events");;
+//		con = DriverManager.getConnection("jdbc:mysql://remotemysql.com:3306/kgJukQ0geQ?useSSL=false", "kgJukQ0geQ", "haebUrLDc8");
 	}
 
 	public Services() {
@@ -205,10 +205,10 @@ public class Services {
 	}
 
 	@GET
-	@Path("/getAllEvent")
-	@Produces("application/json")
-	@Consumes("application/json")
-	public List<Event> getAllEvent() {
+	@Path("/getAllEvent/{circle}")
+//	@Produces("application/json")
+//	@Consumes("application/json")
+	public List<Event> getAllEvent(@PathParam("circle") String circle) {
 		List<Event> events = new ArrayList<Event>();
 		try {
 			doConnection();
@@ -216,9 +216,35 @@ public class Services {
 			rs = ps.executeQuery();
 			
 			while (rs.next()) {
+				String desc = "";
+				try {
+				desc = rs.getString("Description");
+				if(desc == null) {
+					desc = "";
+				}else if(desc.trim().equalsIgnoreCase("null")) {
+					desc = "";
+				}else if(desc.trim().equalsIgnoreCase("")) {
+					desc = "";
+				}else if( desc.trim().equalsIgnoreCase("No Description")) {
+					desc = "";
+				}
+				else {
+					String arr[] = desc.trim().split(";");
+					for(String str : arr) {
+						String arr1[] = str.trim().split(":");
+						if(arr1[0].equalsIgnoreCase(circle)) {
+							desc = arr1[1];
+						}
+					}
+					
+				}
+				}catch(Exception e) {
+					e.printStackTrace();
+					desc = "";
+				}
 				Event event = new Event(rs.getInt("ID"), rs.getString("Date"), rs.getString("Grp"), rs.getString("Batch"),
 						rs.getString("Start_Time"), rs.getString("End_Time"), rs.getString("Activity"),
-						rs.getString("Description"), rs.getString("Venue"));
+						desc, rs.getString("Venue"));
 				events.add(event);
 				event = null;
 			}
