@@ -34,9 +34,9 @@ public class Services {
 
 	void doConnection() throws ClassNotFoundException, SQLException {
 		Class.forName("com.mysql.jdbc.Driver");
-		con = DriverManager.getConnection("jdbc:mysql://localhost:3306/auevents", "auevents",
-				"!1Events");;
-//		con = DriverManager.getConnection("jdbc:mysql://remotemysql.com:3306/kgJukQ0geQ?useSSL=false", "kgJukQ0geQ", "haebUrLDc8");
+//		con = DriverManager.getConnection("jdbc:mysql://localhost:3306/auevents", "auevents",
+//				"!1Events");;
+		con = DriverManager.getConnection("jdbc:mysql://remotemysql.com:3306/kgJukQ0geQ?useSSL=false", "kgJukQ0geQ", "haebUrLDc8");
 	}
 
 	public Services() {
