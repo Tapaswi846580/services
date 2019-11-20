@@ -34,41 +34,11 @@ public class Services {
 
 	void doConnection() throws ClassNotFoundException, SQLException {
 		Class.forName("com.mysql.jdbc.Driver");
-//		con = DriverManager.getConnection("jdbc:mysql://localhost:3306/auevents", "auevents",
-//				"!1Events");;
 		con = DriverManager.getConnection("jdbc:mysql://remotemysql.com:3306/kgJukQ0geQ?useSSL=false", "kgJukQ0geQ", "haebUrLDc8");
 	}
 
 	public Services() {
 		// TODO Auto-generated constructor stub
-	}
-
-	@GET
-	@Path("/getAll")
-	@Produces("application/json")
-	public List<User> getAllRecords() {
-		List<User> li = new ArrayList<User>();
-		try {
-			doConnection();
-			st = con.createStatement();
-			rs = st.executeQuery("SELECT * FROM tbl_student_details");
-			while (rs.next()) {
-				li.add(new User(rs.getInt("ID"), rs.getString("Email_ID"), rs.getString("Password")));
-			}
-			rs.close();
-			st.close();
-			con.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-			try {
-				con.close();
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		}
-		return li;
-
 	}
 
 	@POST
